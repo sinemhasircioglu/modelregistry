@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 @RestController 
 @RequestMapping("/rest")
 public class ModelController {
+	// TODO @Sinem make this configurable
 	  public final String FILE_PATH="C:\\Users\\sinem\\Desktop\\ATLZoo";	  
  
 		 @GetMapping("/folders")

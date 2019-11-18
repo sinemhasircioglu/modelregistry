@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 @RequestMapping("/rest")
 public class ModelController {
 	// TODO @Sinem make this configurable
-	  public final String FILE_PATH="C:\\Users\\sinem\\Desktop\\ATLZoo";	  
+	  public final String FILE_PATH="/Users/obabur/samos-ws/ATLZoo";	  
  
 		 @GetMapping("/folders")
 		  public ResponseEntity<List<String>> getFolders() throws IOException {
@@ -35,6 +35,7 @@ public class ModelController {
 		   }	
 	  
 		 @GetMapping("/folders/{folderName:.+}")
+		 // TODO @sinem for all paths, make sure that they are platform independent. check https://stackoverflow.com/questions/3548775/platform-independent-paths-in-java
 		  public ResponseEntity<Folder> getFolder(@PathVariable String folderName) throws IOException {
 			 File folderDirectory = new File(FILE_PATH+"\\"+folderName);  
 			 int fileCount = folderDirectory.listFiles().length;

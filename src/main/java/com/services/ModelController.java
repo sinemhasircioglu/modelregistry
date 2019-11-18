@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
@@ -17,12 +18,23 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController 
 @RequestMapping("/rest")
-public class ModelController {
-	// TODO @Sinem make this configurable
-	  public final String FILE_PATH="C:\\Users\\sinem\\Desktop\\ATLZoo";	  
+public class ModelController {	
+	public static String FILE_PATH = "";
+	
+	private static void loadConfiguration(){
+		InputStream input = ModelController.class.getClassLoader().getResourceAsStream("config.properties");
+		Properties properties = new Properties();		
+		try{
+			properties.load(input);			
+			input.close();
+			FILE_PATH = properties.getProperty("FILE_PATH");			
+		} catch(Exception ex) {ex.printStackTrace(); 
+	   }				
+	}
  
 		 @GetMapping("/folders")
 		  public ResponseEntity<List<String>> getFolders() throws IOException {
+			 loadConfiguration();
 			   	File directory = new File(FILE_PATH);     		       
 			   	File[] fList = directory.listFiles();
 			   	List<String> list=new ArrayList<String>();
@@ -35,8 +47,8 @@ public class ModelController {
 		   }	
 	  
 		 @GetMapping("/folders/{folderName:.+}")
-		 // TODO @sinem for all paths, make sure that they are platform independent. check https://stackoverflow.com/questions/3548775/platform-independent-paths-in-java
 		  public ResponseEntity<Folder> getFolder(@PathVariable String folderName) throws IOException {
+			 loadConfiguration();
 			 File folderDirectory = new File(FILE_PATH + File.separatorChar + folderName);  
 			 int fileCount = folderDirectory.listFiles().length;
 			 File[] files = folderDirectory.listFiles();
@@ -53,7 +65,8 @@ public class ModelController {
 
 		 @GetMapping(value="/folders/{folderName:.+}/files")
 		  public ResponseEntity<List<String>> getFiles(@PathVariable String folderName) throws IOException {	    	
-			  File file = new File(FILE_PATH + File.separatorChar + folderName );  
+			 loadConfiguration();
+			 File file = new File(FILE_PATH + File.separatorChar + folderName );  
 		      String[] files=null;
 		      if(file.isDirectory()){
 		    	  files = file.list();
@@ -63,7 +76,8 @@ public class ModelController {
   
 		 @GetMapping("/folders/{folderName:.+}/files/{fileName:.+}")
 		  public void getFile(HttpServletResponse response, @PathVariable String folderName, @PathVariable String fileName) throws IOException {
-	       File file = new File(FILE_PATH+ File.separatorChar +folderName+ File.separatorChar + fileName);
+			 loadConfiguration();
+			 File file = new File(FILE_PATH+ File.separatorChar +folderName+ File.separatorChar + fileName);
 
 	       response.setContentType("application/octet-stream");
 	       response.setHeader("Content-Disposition", "attachment; filename=\""+fileName);
